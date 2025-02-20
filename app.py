@@ -17,17 +17,22 @@ def example():
 @app.route('/api/my_time_save', methods=['POST'])
 def my_time_save():
     data = request.get_json()
-    #if isinstance(data, dict):   
-    #    json = jsonify(data)
-    #    project_id = json['project_id']
-    #    hours_worked = json['hours_worked']
-    #    date = json['date']
-    #    work_type = json['work_type']
-    #    insert_my_time_to_db(project_id, hours_worked, date, work_type)
-    #    return 200
-    #else:
-    #    return jsonify({"error": "Invalid input, expected a dictionary"}), 400
-    return 200
+    if isinstance(data, dict):
+        project_id = data['project_id']
+        hours_worked = data['hours_worked']
+        date = data['date']
+        work_type = data['work_type']
+        userid = 'user_1'
+        insert_my_time_to_db(project_id, hours_worked, date, work_type, userid)
+        
+        all_records = fetch_all_records(userid)
+        response = {
+            "data": data,
+            "all_records": all_records
+        }
+        return jsonify(response), 200
+    else:
+        return jsonify({"error": "Invalid input, expected a dictionary"}), 400
 
 if __name__ == '__main__':
     app.run(port=5001)

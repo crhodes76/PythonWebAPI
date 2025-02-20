@@ -1,29 +1,30 @@
 import pyodbc
 from datetime import datetime
 
-def insert_my_time_to_db(project_id, hours_worked, date, work_type):
+def insert_my_time_to_db(project_id: str, hours_worked: str, date:str, work_type: str, userid: str):
     date_obj = datetime.strptime(date, '%Y-%m-%d')
     connection = initiate_connection()
     cursor = connection.cursor()
     cursor.execute("""
-        INSERT INTO [dbo].[MyTimeTracking] (date, hours, project_id, work_type)
-        VALUES (?, ?, ?, ?)
-    """, date_obj, hours_worked, project_id, work_type)
+        INSERT INTO [dbo].[MyTimeTracking] (date, hours, project_id, work_type, userid)
+        VALUES (?, ?, ?, ?, ?)
+    """, date_obj, hours_worked, project_id, work_type, userid)
     connection.commit()
     cursor.close()
     close_connection(connection)
 
-def fetch_all_records(self):
+def fetch_all_records(userid: str):
     records = []
     connection = initiate_connection()
     cursor = connection.cursor()
-    cursor.execute("SELECT date, hours, project_id, work_type FROM [dbo].[MyTimeTracking] ORDER BY date DESC")
+    cursor.execute("SELECT date, hours, project_id, work_type, userid FROM [dbo].[MyTimeTracking] WHERE userid = ?", (userid,))
     for row in cursor.fetchall():
         records.append({
             'date': row.date,
             'hours': row.hours,
             'project_id': row.project_id,
-            'work_type': row.work_type
+            'work_type': row.work_type,
+            'userid': row.userid
         })
     cursor.close()
     close_connection(connection)
